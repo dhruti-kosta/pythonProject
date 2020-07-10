@@ -1,11 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Enter Image URL</title>
-   
-</head>
-<body>
-    <p>{{ returnjson }}</p>
+  <meta charset="utf-8">
+  <meta http-Equiv="Cache-Control" Content="no-cache,no-store, must-revalidate" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Face Detection Website</title>
+  <!-- Bootstrap core CSS -->
+  <link href="static/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="static/css/scrolling-nav.css" rel="stylesheet">
+</head> 
+
+<body id="page-top">
+  <header class="bg-primary text-white">
+    <div class="container text-center">
+      <h1>Welcome to Face++</h1>
+      <p class="lead">An application for Face Detection</p>
+    </div>
+  </header>
+    <div class="container py-5">
+        <div class="row py-5">
+            <div class="col-lg-7">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" frameborder="5" scrolling="no" width="100%" height="100%"
+                        src="../static/images/{{ returnimage }}" name="imgbox" id="imgbox">
+                        <p>iframes are not supported by your browser.</p>
+                    </iframe>
+                </div>
+            </div>
+            <div class="col-lg-5" style="border: 1px solid silver;">
+                <iframe class="embed-responsive-item" frameborder="0" scrolling="yes" width="100%" height="100%"
+                        src="/faces?lsfaces={{ lsfaces }}&lenfaces={{ lenfaces }}" name="imgfaces" id="imgfaces">
+                        <p>iframes are not supported by your browser.</p>
+                </iframe>
+                <iframe class="embed-responsive-item" frameborder="0" scrolling="yes" width="100%" height="100%"
+                    src="/facedetails?lsfaces={{ lsfaces }}&lenfaces={{ lenfaces }}&filename=''" name="imgfacedetails" id="imgfacedetails">
+                    <p>iframes are not supported by your browser.</p>
+                </iframe>
+            </div>
+        </div>
+    </div>
+<!-- Footer -->
+<footer class="py-5 bg-dark">
+<div class="container">
+<p class="m-0 text-center text-white">Copyright &copy; Face++ 2020</p>
+</div>
+<!-- /.container -->
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="static/js/jquery/jquery.min.js"></script>
+<script src="static/js/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="static/js/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom JavaScript for this theme -->
+<script src="static/js/scrolling-nav.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    //document.querySelector('iframe[name="imgfaces"]').contentWindow.location.reload();
+    document.querySelector('iframe[name="imgbox"]').contentWindow.addEventListener('load',function(e){e.target.body.style.textAlign='center'; e.target.body.style.border = "2px";},true) 
+    //document.querySelector('iframe[name="imgbox"]').contentWindow.location.reload();
+    $('iframe').each(function() {
+        this.contentWindow.location.reload(true);
+    });
+});
+
+</script>
 </body>
 </html>

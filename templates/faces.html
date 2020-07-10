@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-Equiv="Cache-Control" Content="no-cache,no-store, must-revalidate" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Face Detection Website</title>
+  <!-- Bootstrap core CSS -->
+  <link href="static/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="static/css/scrolling-nav.css" rel="stylesheet">
+</head> 
+<body>
+    <div class="container py-5">
+    <div class="row">
+    <div class="col-md-2 py-2">
+        <a href="../static/images/{{ returnimage }}" target="imgbox">
+            <img class="img_thumbnail" src="../static/images/{{ returnimage }}" alt="face">
+        </a>
+    </div>
+    {% for key,value in lsfaces.items() %}
+        <div class="col-md-2 py-2">
+            <a class="facelink" href="../static/images/pointfaces/{{ value.filename }}" target="imgbox" onclick="showdetails('{{ value.filename }}')">
+                <img class="img_thumbnail" src="../static/images/cropfaces/{{ value.filename }}" alt="face">
+            </a>
+        </div>
+    {% endfor %}
+</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    document.querySelector('iframe[name="imgfaces"]').contentWindow.location.reload();
+});
+function showdetails(filename) {
+    document.querySelector('iframe[name="imgbox"]').contentWindow.addEventListener('load',function(e){e.target.body.style.textAlign='center'; e.target.body.style.border = "2px";},true) 
+    document.querySelector('iframe[name="imgbox"]').contentWindow.location.reload();
+    $("iframe[name='imgfacedetails']").attr('src', "/facedetails?lsfaces={{ lsfaces }}&lenfaces={{ lenfaces }}&filename=" + filename);
+    document.querySelector('iframe[name="imgfacedetails"]').contentWindow.location.reload();
+}
+</script>
+</body>

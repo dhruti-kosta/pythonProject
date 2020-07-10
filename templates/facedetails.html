@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-Equiv="Cache-Control" Content="no-cache,no-store, must-revalidate" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Face Detection Website</title>
+  <!-- Bootstrap core CSS -->
+  <link href="static/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="static/css/scrolling-nav.css" rel="stylesheet">
+</head> 
+<body>
+    <div class="container py-5">
+     <div class="row">
+        <div class="col-md-4">
+            <div style="text-align: center;vertical-align: middle;">
+                {{ lenfaces }} faces have been detected, each of them got unique face_token, click the face image to check detect results. You can pass these informations to other APIs for further processing. We strongly recommend using Face Attributes and Face Landmark APIs.
+            </div>
+        </div>
+     </div>
+     <div class="row">
+         <div class="col-md-4">
+             <label class="lblface">Age</label>
+         </div>
+         <div>
+             <label id="lblAge"></label>
+         </div>
+     </div>
+     <div class="row">
+         <div class="col-md-4">
+             <label class="lblface">Gender</label>
+         </div>
+         <div>
+             <label id="lblgender"></label>
+         </div>
+     </div>
+     <div class="row">
+         <div class="col-md-4">
+             <label class="lblface">smiling</label>
+         </div>
+         <div>
+             <label class="lblsmile"></label>
+         </div>
+     </div>
+     <div class="row">
+         <div class="col-md-4">
+             <label class="lblface">Left Eye Status</label>
+         </div>
+         <div>
+             <label class="lbllefteye"></label>
+         </div>
+     </div>
+     <div class="row">
+         <div class="col-md-4">
+             <label class="lblface">Right Eye Status</label>
+         </div>
+         <div>
+             <label class="lblrighteye"></label>
+         </div>
+     </div>
+    </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        document.querySelector('iframe[name="imgfaces"]').contentWindow.location.reload();
+    });
+    function refresh() {
+        alert("hi");
+        document.querySelector('iframe[name="imgbox"]').contentWindow.addEventListener('load',function(e){e.target.body.style.textAlign='center'; e.target.body.style.border = "2px";},true) 
+        document.querySelector('iframe[name="imgbox"]').contentWindow.location.reload();
+    }
+</script>
+</body>

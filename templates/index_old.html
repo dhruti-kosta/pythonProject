@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Detection</title>
+    <style type="text/css">
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn {
+            border: 2px solid gray;
+            color: gray;
+            background-color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .text {
+            border: 2px solid gray;
+            color: gray;
+            background-color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .lbl {
+            color: gray;
+            background-color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .upload-btn-wrapper input[type=submit] {
+            font-size: 14px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <form action = "/index" method = "POST" enctype = "multipart/form-data">
+        <div class="upload-btn-wrapper lbl">Enter Image URL:</div>
+        <div class="upload-btn-wrapper">
+            <input class="text" type = "text" name = "imageurl"></div>
+        <div class="upload-btn-wrapper">
+            <button class="btn">Go</button>
+        </div>
+        <div class="upload-btn-wrapper">
+            <button class="btn">Upload a file</button>
+            <input type="file" name="myfile" />
+        </div>
+    </form>
+</body>
+</html>

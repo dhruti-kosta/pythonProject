@@ -1,20 +1,17 @@
 #~/usr/bin/env python3
 import requests
-import pandas
 import json
 import webbrowser
-import matplotlib
-import matplotlib.pyplot as pyplot
-import matplotlib.patches as patches 
+from PIL import Image, ImageFont, ImageDraw, ImageEnhance
+import os
+import ast
 
 # An object of Flask class is our WSGI application
 ## best practice says don't use commas in imports
 # use a single line for each import
 from flask import Flask
-from flask import redirect
-from flask import url_for
 from flask import request
-from flask import render_template, make_response
+from flask import render_template
 
 # Flask constructor takes the name of current
 # module (__name__) as argument
@@ -27,27 +24,6 @@ API = "https://api-us.faceplusplus.com/facepp/v3/detect?"
 def start():
     return render_template("index.html") # look for index.html
 
-## This is where we want to redirect users to
-# @app.route("/success/<image_url>")
-# def success(image_url):
-#     api_key = "api_key=iCqtqdYpKctOL_AIllv45VYl2bMYUPre"
-#     api_secret = "api_secret=zmpiNh3fu67LXAiWqWhWUCMhJDG3Xabk"
-#     img_url = image_url
-#     return_landmark = "return_landmark=1"
-#     return_attributes = "return_attributes=gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus"
-
-#     finalAPI = API + api_key + "&" + api_secret + "&" + img_url
-#     # call the webservice with our key
-#     res = requests.post(finalAPI)
-#     #return res.json()
-#     return render_template("facedetection.html", renderjson = res.json()) # look for facedetection.html
-
-    #itemsdf = pandas.DataFrame(res.json())
-    #itemsdf.to_json("faces.json")
-
-    # facedata = res.json()["faces"]
-    # print(f"No of Faces in this photograph: {len(facedata)}")
-
 @app.route("/index", methods = ["POST", "GET"])
 def index():
     if request.method == "POST":
@@ -55,43 +31,175 @@ def index():
             imageurl = request.form.get("imageurl") # grab the value of imageurl from the POST
         else: # if a user sent a post without imageurl then assign value defaulturl
             imageurl = "https://www.rollingstone.com/wp-content/uploads/2019/09/FriendsLead.jpg"
-    # GET would likely come from a user interaacting with a browser
-    elif request.method == "GET":
-        if request.args.get("imageurl"): # if imageurl was assigned as a parameter=value
-            imageurl = request.args.get("imageurl") # pull imageurl from localhost:5000/facedetect?imageurl=<defaulturl>
-        else: # if imageurl was not passed...
-            imageurl = "https://www.rollingstone.com/wp-content/uploads/2019/09/FriendsLead.jpg" # ...then url is just defaulturl
     
+    # Download the image
+    img_data = requests.get(imageurl).content
+    with open('static/images/source_image.jpg', 'wb') as handler:
+        handler.write(img_data)
+
+    # Resize source image and save it
+    source_img = Image.open("static/images/source_image.jpg")
+    basewidth = 550
+    wpercent = (basewidth/float(source_img.size[0]))
+    hsize = int((float(source_img.size[1])*float(wpercent)))
+    source_img = source_img.resize((basewidth,hsize), Image.ANTIALIAS)
+    source_img.save("static/images/main_image.jpg", "JPEG")
+
+    #Get all necessory details to call API
     api_key = "api_key=iCqtqdYpKctOL_AIllv45VYl2bMYUPre"
     api_secret = "api_secret=zmpiNh3fu67LXAiWqWhWUCMhJDG3Xabk"
-    img_url = "image_url=" + imageurl
+    #img_url = "image_url=" + imageurl
     return_landmark = "return_landmark=1"
     return_attributes = "return_attributes=gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus"
+    files = {'image_file': open('static/images/main_image.jpg', 'rb')}
+    
+    # call the Face++ API to get data
+    finalAPI = API + api_key + "&" + api_secret + "&" + return_landmark + "&" + return_attributes 
+    res = requests.post(finalAPI,files=files)
+    facedata = res.json().get("faces")
 
-    finalAPI = API + api_key + "&" + api_secret + "&" + img_url + "&" + return_landmark + "&" + return_attributes 
-    # call the webservice with our key
-    res = requests.post(finalAPI)
-    #print(res.json())
+    #Remove cropped images
+    for filename in os.listdir('static/images/cropfaces'):
+        if filename.endswith('.jpg'):
+            os.remove('static/images/cropfaces/' + filename) 
+    #Remove points cropped images
+    for filename in os.listdir('static/images/pointfaces'):
+        if filename.endswith('.jpg'):
+            os.remove('static/images/pointfaces/' + filename) 
 
-    # Download the image
-    with open("user.jpeg", 'wb') as handle:
-        image_response = requests.get(imageurl, stream=True)
-
-    # Display rectagles on each faces found on image entered
-    response = res.json()
-    for face in response.get("faces"):
+    # Draw rectangles on each face and save new image
+    main_image = Image.open("static/images/main_image.jpg")
+    mainimage = Image.open("static/images/main_image.jpg")
+    count = 1
+    faceslist = {} # to send all faces and attributes
+    for face in facedata: 
         face_rectangle = face.get("face_rectangle")
-        img = matplotlib.image.imread("user.jpeg")
-        ax = pyplot.subplots(1)
-        rect = patches.Rectangle((face_rectangle.get("left"),face_rectangle.get("top")),face_rectangle.get("width"),face_rectangle.get("height"), edgecolor='r', facecolor="none")
-        #ax.imshow(img) #Displays an image
-        #ax.add_patch(rect) #Add rectangle to image
+        x = face_rectangle.get("left")
+        y = face_rectangle.get("top")
+        w = face_rectangle.get("width")
+        h = face_rectangle.get("height")
+        
+        # create cropped images of each faces and save in cropfaces folder
+        im_crop = main_image.crop((x, y, (x + w), (y + h)))
+        im_crop.save('static/images/cropfaces/' + str(count) + '.jpg', "JPEG")
+
         
 
-    return render_template("facedetection.html", returnjson = res.json()) # look for facedetection.html
+        # add points to cropped face images and save them in pointfaces folder
+        face_landmark = face.get("landmark")
+        im_landmark = ImageDraw.Draw(mainimage)
+        for mark in face_landmark:
+            im_landmark.point((face_landmark.get(mark).get("x"), face_landmark.get(mark).get("y")),fill="Blue")
+        
+        # save landmark pointed face image after crop
+        im_crop = mainimage.crop((x, y, (x + w), (y + h)))
+        im_crop = im_crop.resize((150,150), Image.ANTIALIAS)
+        im_crop.save('static/images/pointfaces/' + str(count) + '.jpg', "JPEG", quality=100)
+
+        #Draw rectangles on main image
+        draw = ImageDraw.Draw(main_image)
+        draw.rectangle([(x,y),(x + w,y + h)], outline=(0, 0, 255), width=2)
+        
+        # Face attributes to show when click on perticular face
+        attributes = face.get("attributes")
+        age = attributes.get("age").get("value")
+        gender = attributes.get("gender").get("value")
+        smile_value = attributes.get("smile").get("value")
+        smile_threshold = attributes.get("smile").get("threshold")
+
+        eye_status = ""
+        status = 0
+
+        left_eye = attributes.get("eyestatus").get("left_eye_status")
+        for lefteye in left_eye:
+            if(status == 0):
+                status = left_eye.get(lefteye)
+                eye_status = next(key for key, value in left_eye.items() if value == status)
+            else:
+                if(status < left_eye.get(lefteye)):
+                    status = left_eye.get(lefteye)
+                    eye_status = next(key for key, value in left_eye.items() if value == status)
+        left_eye_status = getEyeStatus(eye_status)
+
+        right_eye = attributes.get("eyestatus").get("right_eye_status")
+        for righteye in right_eye:
+            if(status == 0):
+                status = right_eye.get(righteye)
+                eye_status = next(key for key, value in right_eye.items() if value == status)
+            else:
+                if(status < right_eye.get(righteye)):
+                    status = right_eye.get(righteye)
+                    eye_status = next(key for key, value in right_eye.items() if value == status)
+        right_eye_status = getEyeStatus(eye_status)
+
+        # dictionary to send data to display details on face details page
+        attributesDict = {}
+        attributesDict["age"] = age
+        attributesDict["gender"] = gender
+        attributesDict["smile"] = "value: " + str(smile_value) + "; threshold: " + str(smile_threshold)
+        attributesDict["lefteyestatus"] = left_eye_status
+        attributesDict["righteyestatus"] = right_eye_status
+        
+        facedict = {}
+        facedict["filename"] = str(count) + '.jpg'
+        facedict["attributes"] = attributesDict
+        faceslist[count] = facedict
+
+        count += 1
+
+    # save rectangle faced image
+    main_image.save("static/images/facedetection_image.jpg", "JPEG")
+    
+    # render facedetection.html for display new image
+    return render_template("facedetection.html", returnimage = "facedetection_image.jpg", lsfaces = faceslist, lenfaces = (count -1)) # look for facedetection.html
+
+@app.route("/faces", methods = ["POST", "GET"])
+def faces():
+    #get all crop images
+    if request.method == "GET":
+        if request.args.get("lsfaces"): 
+            lsfaces = ast.literal_eval(request.args.get("lsfaces")) 
+        if request.args.get("lenfaces"): 
+            lenfaces = request.args.get("lenfaces") 
+
+    return render_template("faces.html", returnimage = "facedetection_image.jpg", lsfaces = lsfaces, lenfaces = lenfaces) # look for faces.html
+
+@app.route("/facedetails", methods = ["POST", "GET"])
+def facedetails():
+    #get details of selected face
+    lsfaces = {}
+    if request.method == "GET":
+        if request.args.get("lsfaces"): 
+            lsfaces = ast.literal_eval(request.args.get("lsfaces")) 
+        if request.args.get("lenfaces"): 
+            lenfaces = request.args.get("lenfaces") 
+        if request.args.get("filename"): 
+            filename = request.args.get("filename")
+
+    lsfacedetails = {}
+    if filename != '':
+        for key,value in lsfaces.items():
+            for key1,value1 in value.items():
+                if key1 == 'filename':
+                    if(filename == value1):
+                        lsfacedetails = lsfaces['attributes']
+                        break
+
+    return render_template("facedetails.html", lsfaces = lsfacedetails, lenfaces = lenfaces) # look for facedetection.html
+
+def getEyeStatus(eyestatus):
+    switcher={
+        'no_glass_eye_open':  "No Glass, Open",
+        'no_glass_eye_close':  "No Glass, Close",
+        'normal_glass_eye_open':  "Glass, Open",
+        'normal_glass_eye_close':  "Glass, close",
+        'dark_glasses':  "Dark Glasses",
+        'occlusion':  "occlusion",
+    }
+    return switcher.get(eyestatus,"Invalid day of week")
 
 if __name__ == "__main__":
     port = 5000
     url = "http://127.0.0.1:{0}".format(port)
     webbrowser.open(url)
-    app.run(port=port, debug=False)
+    app.run(port=port, debug=True)

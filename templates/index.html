@@ -1,16 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Enter Image URL</title>
-    <form action = "/index" method = "POST">
-        <p>Enter Image URL:</p>
-        <p><input type = "text" name = "imageurl"></p>
-        <p><input type = "submit" value = "Go"></p>
+  <meta charset="utf-8">
+  <meta http-Equiv="Cache-Control" Content="no-cache,no-store, must-revalidate" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Face Detection Website</title>
+  <!-- Bootstrap core CSS -->
+  <link href="static/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="static/css/scrolling-nav.css" rel="stylesheet">
+  <style type="text/css">
+        #upload {
+            opacity: 0;
+        }
 
-        
-    </form>
-</head>
-<body>
+        #upload-label {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+        }
+  </style>
+</head> 
+
+<body id="page-top">
+  <header class="bg-primary text-white">
+    <div class="container text-center">
+      <h1>Welcome to Face++</h1>
+      <p class="lead">An application for Face Detection</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container py-5">
+      <div class="row py-4">
+        <div class="col-lg-8 mx-auto">
+            <form action = "/index" method = "POST">
+              <div style="display: inline-flex;">
+                <div style="padding: 10px;">
+                  <label for="imageurl" class="lbltext">Enter Image URL</label>
+                </div>
+                <div style="padding: 5px;">
+                  <input name = "imageurl" type="text" id="imageurl" class="form-control" autofocus>
+                </div>
+                <div style="padding: 5px;">
+                  <button class="btn btn-primary" type="submit">Go</button>
+                </div>
+              </div>  
+                <!-- <div>
+                    <label style="text-align: center;">OR</label>
+                </div>
+                <--Upload image input
+                <div class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm">
+                    <input id="upload" name="myfile" type="file" class="form-control border-0">
+                    <label id="upload-label" for="upload" class="font-weight-light text-muted">Choose file</label>
+                    <div class="input-group-append">
+                        <label for="upload" class="btn btn-light m-0 rounded-pill px-4"> <i class="fa fa-cloud-upload mr-2 text-muted"></i><small class="text-uppercase font-weight-bold text-muted">Choose file</small></label>
+                    </div>  
+                </div> -->
+            </form>         
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Face++ 2020</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="static/js/jquery/jquery.min.js"></script>
+  <script src="static/js/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="static/js/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom JavaScript for this theme -->
+  <script src="static/js/scrolling-nav.js"></script>
+
 </body>
+
 </html>
